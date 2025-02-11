@@ -1,33 +1,29 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: monitoring
+  name: temp
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: prometheus
-  namespace: monitoring
+  name: tomcat
+  namespace: temp
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: prometheus
+      app: tomcat
   template:
     metadata:
       labels:
-        app: prometheus
+        app: tomcat
     spec:
       containers:
-        - name: prometheus
-          image: prom/prometheus
-          args:
-            - "--web.route-prefix=/prometheus"
-            - "--web.external-url=http://sample1.com/prometheus"
-            - "--web.enable-lifecycle"
+        - name: tomcat
+          image: tomcat:latest
           ports:
-            - containerPort: 9090
+            - containerPort: 8080
           resources:
             limits:
               cpu: "500m"
@@ -41,13 +37,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: prometheus
-  namespace: monitoring
+  name: tomcat
+  namespace: temp
 spec:
   selector:
-    app: prometheus
+    app: tomcat
   ports:
     - protocol: TCP
-      port: 9090
-      targetPort: 9090
+      port: 8080
+      targetPort: 8080
   type: ClusterIP
